@@ -10,10 +10,12 @@ from __future__ import annotations
 import shutil
 import uuid
 from pathlib import Path
+from typing import Literal
 
 from fastapi import APIRouter, File, HTTPException, Query, UploadFile
 from fastapi.responses import FileResponse
 
+from app.config import settings
 from app.interface_adapters.api.container import build_process_video_use_case
 from app.interface_adapters.api.schemas import HealthResponse, ProcessVideoResponse
 
@@ -24,9 +26,8 @@ router = APIRouter()
 # doesn't care how/where this bookkeeping happens.
 _JOBS: dict[str, dict[str, str]] = {}
 
-DATA_ROOT = Path("data")
-UPLOADS_DIR = DATA_ROOT / "uploads"
-OUTPUTS_DIR = DATA_ROOT / "outputs"
+UPLOADS_DIR = settings.uploads_dir
+OUTPUTS_DIR = settings.outputs_dir
 for _dir in (UPLOADS_DIR, OUTPUTS_DIR):
     _dir.mkdir(parents=True, exist_ok=True)
 
@@ -39,7 +40,7 @@ def health_check() -> HealthResponse:
 @router.post("/process-video", response_model=ProcessVideoResponse)
 async def process_video(
     file: UploadFile = File(..., description="Video of a person performing an action."),
-    pose_data_format: str = Query(default="json", pattern="^(json|csv)$"),
+    pose_data_format: Literal["json", "csv"] = Query(default="json", pattern="^(json|csv)$"),
 ) -> ProcessVideoResponse:
     job_id = str(uuid.uuid4())
     job_dir = OUTPUTS_DIR / job_id

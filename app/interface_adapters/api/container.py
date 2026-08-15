@@ -9,6 +9,7 @@ MediaPipe/OpenCV classes directly.
 """
 from __future__ import annotations
 
+from app.config import settings
 from app.domain.ports import PoseSequenceStorage
 from app.infrastructure.pose_estimation.mediapipe_pose_estimator import (
     MediaPipePoseEstimator,
@@ -41,7 +42,11 @@ def build_process_video_use_case(
     PoseEstimator is created per job to keep MediaPipe's internal
     (stateful, non-thread-safe) tracker isolated between requests.
     """
-    pose_estimator = MediaPipePoseEstimator()
+    pose_estimator = MediaPipePoseEstimator(
+        model_path=settings.pose_model_path,
+        min_detection_confidence=settings.min_detection_confidence,
+        min_tracking_confidence=settings.min_tracking_confidence,
+    )
     pose_storage = _build_pose_storage(pose_data_format)
     skeleton_renderer = OpenCvSkeletonOverlayRenderer()
     avatar_renderer = StickFigureAvatarRenderer()
