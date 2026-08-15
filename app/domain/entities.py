@@ -91,8 +91,8 @@ class Keypoint:
     """A single tracked joint in a single frame, in normalized [0,1]
     image coordinates (origin top-left), plus a confidence score."""
     landmark: Landmark
-    x: float
-    y: float
+    x: float | None
+    y: float | None
     z: float
     visibility: float  # confidence / visibility score, 0.0 - 1.0
 

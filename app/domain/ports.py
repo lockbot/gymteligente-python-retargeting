@@ -22,9 +22,17 @@ class PoseEstimator(ABC):
     """Port for any engine that can detect body keypoints in a frame."""
 
     @abstractmethod
-    def estimate(self, frame: np.ndarray) -> Optional[list[Keypoint]]:
+    def estimate(
+        self, frame: np.ndarray, timestamp_ms: int
+    ) -> Optional[list[Keypoint]]:
         """Return detected keypoints for a single BGR image frame, or
-        None if no pose was detected."""
+        None if no pose was detected.
+
+        `timestamp_ms` is the frame's position in the source video in
+        milliseconds and MUST be strictly increasing across successive
+        calls for the same estimator instance -- video-mode pose
+        trackers use it to maintain temporal continuity between
+        frames."""
         raise NotImplementedError
 
     def close(self) -> None:

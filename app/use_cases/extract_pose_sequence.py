@@ -23,11 +23,13 @@ class ExtractPoseSequenceUseCase:
 
         pose_frames: list[PoseFrame] = []
         for index, frame in enumerate(self._video_reader.frames()):
-            keypoints = self._pose_estimator.estimate(frame)
+            timestamp_seconds = index / fps
+            timestamp_ms = int(timestamp_seconds * 1000)
+            keypoints = self._pose_estimator.estimate(frame, timestamp_ms)
             pose_frames.append(
                 PoseFrame(
                     frame_index=index,
-                    timestamp_seconds=index / fps,
+                    timestamp_seconds=timestamp_seconds,
                     keypoints=keypoints,
                 )
             )
